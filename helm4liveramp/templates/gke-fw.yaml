@@ -1,0 +1,44 @@
+# KCC Deployment Configuration
+# Type:         Compute Firewall
+# Description:  Manifest used to create Compute Firewalls in a project.
+# Maintainer:   Cloud Platform Ops <CloudPlatforms@bestbuy.com>
+
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeFirewall
+metadata:
+  name: gke-nodes-rule1
+spec:
+  direction: EGRESS
+  enableLogging: true
+  description: "Allow GKE nodes 80/443 outbound"
+  allow:
+    - protocol: tcp
+      ports:
+      - "80"
+      - "443"
+  targetTags:
+  - gke-nodes
+  priority: 800
+  networkRef:
+    name: {{ $.Values.network | replace " " "-" | lower }}
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeFirewall
+metadata:
+  name: gke-nodes-rule2
+spec:
+  direction: EGRESS
+  enableLogging: true
+  description: "Firewall rule allowing internal access for GKE"
+  allow:
+    - protocol: all
+  targetTags:
+  - gke-nodes
+  destinationRanges:
+  - 10.160.1.0/28
+  - 10.160.8.0/21
+  - 10.160.128.0/17
+  priority: 800
+  networkRef:
+    name: {{ $.Values.network | replace " " "-" | lower }}
+

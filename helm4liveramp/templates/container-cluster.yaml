@@ -1,0 +1,59 @@
+# KCC Deployment Configuration
+# Type:         Container Cluster
+# Description:  Manifest used to create a Container Clusters in a project.
+# Maintainer:   Cloud Platform Ops <CloudPlatforms@bestbuy.com>
+
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerCluster
+metadata:
+  annotations:
+    cnrm.cloud.google.com/remove-default-node-pool: "true"
+  name: {{ $.Values.name | replace " " "-" | lower }}
+spec:
+  location: {{ $.Values.location | replace " " "-" | lower }}
+  nodeLocations:
+  {{- range $key, $value := $.Values.node_locations }}
+  - {{ . }}
+  {{- end}}
+  initialNodeCount: 1
+  enableBinaryAuthorization: true
+  verticalPodAutoscaling:
+    enabled: true
+  networkRef:
+    name: {{ $.Values.network | replace " " "-" | lower }}
+  subnetworkRef:
+    name: {{ $.Values.subnetwork | replace " " "-" | lower }}
+  addonsConfig:
+    httpLoadBalancing:
+      disabled: {{ $.Values.httpsloadbalancing }}
+  masterAuthorizedNetworksConfig:
+    cidrBlocks:
+    - cidrBlock: 10.160.0.0/29
+  privateClusterConfig:
+    enablePrivateEndpoint: true
+    enablePrivateNodes: true
+    masterIpv4CidrBlock: 10.160.1.0/28
+  ipAllocationPolicy:
+    clusterIpv4CidrBlock: 10.160.128.0/17
+    clusterSecondaryRangeName: gke-pods
+    servicesIpv4CidrBlock: 10.160.16.0/21
+    servicesSecondaryRangeName: gke-services
+  databaseEncryption:
+    state: ENCRYPTED
+    keyName: {{ $.Values.cryptokey }}
+  enableShieldedNodes: true
+  workloadIdentityConfig:
+    identityNamespace: {{ $.Release.Namespace | replace " " "-" | lower }}.svc.id.goog
+  nodeConfig:
+    imageType: COS
+    metadata:
+      disable-legacy-endpoints: "true"
+      block-project-ssh-keys: "true"
+    oauthScopes:
+    - https://www.googleapis.com/auth/cloud-platform
+    shieldedInstanceConfig:
+      enableSecureBoot: true
+      enableIntegrityMonitoring: true
+    tags:
+    - route-cloud-nat
+    - gke-nodes

@@ -1,0 +1,45 @@
+# KCC Deployment Configuration
+# Type:         ComputeSubnetwork
+# Description:  Manifest used to create Compute Subnetworks in a project.
+# Maintainer:   Cloud Platform Ops <CloudPlatforms@bestbuy.com>
+
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeSubnetwork
+metadata:
+  labels:
+    subnet: gke
+  name: {{ $.Values.subnetwork | replace " " "-" | lower }}
+spec:
+  logConfig:
+    aggregationInterval: INTERVAL_5_SEC
+    flowSampling: 0.5
+    metadata: INCLUDE_ALL_METADATA
+  ipCidrRange: 10.160.8.0/21
+  region: us-central1
+  description: GKE
+  privateIpGoogleAccess: true
+  networkRef:
+    name: {{ $.Values.network }}
+  secondaryIpRange:
+  - ipCidrRange: 10.160.128.0/17
+    rangeName: gke-pods
+  - ipCidrRange: 10.160.16.0/21
+    rangeName: gke-services
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeSubnetwork
+metadata:
+  labels:
+    subnet: mgmt
+  name: {{ $.Values.mgmthost.subnetwork | replace " " "-" | lower }}
+spec:
+  logConfig:
+    aggregationInterval: INTERVAL_5_SEC
+    flowSampling: 0.5
+    metadata: INCLUDE_ALL_METADATA
+  ipCidrRange: 10.160.0.0/29
+  region: us-central1
+  description: mgmt
+  privateIpGoogleAccess: true
+  networkRef:
+    name: {{ $.Values.network }}

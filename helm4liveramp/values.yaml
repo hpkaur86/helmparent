@@ -1,0 +1,29 @@
+# Default values for gcp-helm-gke.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: centralizedhelm
+subnetwork: centralizedsubnetwork
+machine_type: n2-standard-2
+httpsloadbalancing: true
+location: us-central1
+cryptokey: cryptokey
+node_locations:
+- us-central1-b
+- us-central1-c
+nodePool:
+  - name: np1
+    initialNodeCount: "1"
+    autoscaling:
+      minnodecount: "1"
+      maxnodecount: "10"
+    location: us-central1
+    node_locations:
+    - us-central1-a
+    - us-central1-b
+    - us-central1-c
+    machine_type: n2-standard-2
+network: test_helm
+mgmthost:
+  name: test-host 
+  subnetwork: test-host-us-central1-mgmt

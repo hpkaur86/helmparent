@@ -1,0 +1,56 @@
+# KCC Deployment Configuration
+# Type:         IAMPolicyMember
+# Description:  Manifest used to create IAMPolicyMembers in a project.
+# Maintainer:   Cloud Platform Ops <CloudPlatforms@bestbuy.com>
+{{ $project_hash := ((lookup "v1" "ConfigMap" $.Release.Namespace $.Release.Namespace)|default .Values.global.lookups).data.bby_kcc_project_hash }}
+# Default GKE permission
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: monitoring-metric-writer-project-gke-sa
+spec:
+  member: serviceAccount:gke-{{ $.Values.name }}-{{ $project_hash }}@{{ $.Release.Namespace | replace " " "-" | lower }}.iam.gserviceaccount.com
+  role: roles/monitoring.metricWriter
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: {{ $.Release.Namespace | replace " " "-" | lower }}
+---
+# Default GKE permission
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: logging-log-writer-project-gke-sa
+spec:
+  member: serviceAccount:gke-{{ $.Values.name }}-{{ $project_hash }}@{{ $.Release.Namespace | replace " " "-" | lower }}.iam.gserviceaccount.com
+  role: roles/logging.logWriter
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: {{ $.Release.Namespace | replace " " "-" | lower }}
+---
+# Default GKE permission
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: monitoring-viewer-project-gke-sa
+spec:
+  member: serviceAccount:gke-{{ $.Values.name }}-{{ $project_hash }}@{{ $.Release.Namespace | replace " " "-" | lower }}.iam.gserviceaccount.com
+  role: roles/monitoring.viewer
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: {{ $.Release.Namespace | replace " " "-" | lower }}
+---
+# Default GKE permssion
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: stackdriver-resourcemetadata-writer-project-gke-sa
+spec:
+  member: serviceAccount:gke-{{ $.Values.name }}-{{ $project_hash }}@{{ $.Release.Namespace | replace " " "-" | lower }}.iam.gserviceaccount.com
+  role: roles/stackdriver.resourceMetadata.writer
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: {{ $.Release.Namespace | replace " " "-" | lower }}

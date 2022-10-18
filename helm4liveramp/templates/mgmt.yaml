@@ -1,0 +1,36 @@
+# KCC Deployment Configuration
+# Type:         Compute Instance
+# Description:  Manifest used to create Compute Instances in a project.
+# Maintainer:   Cloud Platform Ops <CloudPlatforms@bestbuy.com>
+
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeInstance
+metadata:
+  annotations:
+    cnrm.cloud.google.com/allow-stopping-for-update: "true"
+  name: {{ $.Values.mgmthost.name | replace " " "-" | lower }}
+  labels:
+    created-from: "image"
+    network-type: "subnetwork"
+spec:
+  shieldedInstanceConfig:
+    enableIntegrityMonitoring: true
+    enableSecureBoot: true
+    enableVtpm: true
+  machineType: n1-standard-1
+  metadata:
+  - key: "enable-oslogin"
+    value: "true"
+  zone: us-central1-a
+  bootDisk:
+    initializeParams:
+      size: 24
+      type: pd-ssd
+      sourceImageRef:
+        external: https://www.googleapis.com/compute/v1/projects/gce-uefi-images/global/images/centos-7-v20191014
+  networkInterface:
+    - subnetworkRef:
+        name: {{ $.Values.mgmthost.subnetwork | replace " " "-" | lower }}
+  tags:
+  - route-cloud-nat
+  - management-hosts

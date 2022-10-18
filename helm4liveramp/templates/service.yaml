@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm4liveRamp.fullname" . }}
+  labels:
+    {{- include "helm4liveRamp.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "helm4liveRamp.selectorLabels" . | nindent 4 }}
+
+# KCC Deployment Configuration
+# Type: GKE Service
+# Description:  Manifest used to enable the GKE service.
+# Maintainer:   Cloud Platforem Ops <CloudPlatforems@bestbuy.com>
+
+apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
+kind: Service
+metadata:
+  name: container.googleapis.com
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: "abandon"

@@ -1,0 +1,55 @@
+# KCC Deployment Configuration
+# Type:         ContainerNodePool
+# Description:  Manifest used to create ContainerNodePools in a project.
+# Maintainer:   Cloud Platform Ops <CloudPlatforms@bestbuy.com>
+{{ $project_hash := ((lookup "v1" "ConfigMap" $.Release.Namespace $.Release.Namespace)|default .Values.global.lookups).data.bby_kcc_project_hash }}
+
+{{- range $key, $value := $.Values.nodePool }}
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerNodePool
+metadata:
+  name: {{ $value.name| replace " " "-" | lower }}
+spec:
+  location: {{ $value.location | replace " " "-" | lower }}
+  nodeLocations:
+  {{- range $key, $value := $value.node_locations }}
+  - {{ . }}
+  {{- end}}
+  initialNodeCount: {{ int $value.initialNodeCount }}
+  autoscaling:
+    minNodeCount: {{ int $value.autoscaling.minnodecount }}
+    maxNodeCount: {{ int $value.autoscaling.maxnodecount }}
+  nodeConfig:
+    serviceAccountRef:
+      name: gke-{{ $.Values.name }}-{{ $project_hash }}
+    metadata:
+    - key: "enable-oslogin"
+      value: "true"
+    imageType: COS
+    machineType: {{ $value.machine_type }}
+    {{- if $value.guestAccelerator }}
+    guestAccelerator:
+    {{- range $key, $value := $value.guestAccelerator }}
+    - count: {{ $value.count }}
+      type: {{ $value.type }}
+    {{- end}}
+    {{- end}}
+    tags:
+      - route-cloud-nat
+      - gke-nodes
+    preemptible: false
+    oauthScopes:
+      - https://www.googleapis.com/auth/cloud-platform
+    metadata:
+      disable-legacy-endpoints: "true"
+      block-project-ssh-keys: "true"
+    shieldedInstanceConfig:
+        enableSecureBoot: true
+        enableIntegrityMonitoring: true
+  management:
+    autoRepair: true
+    autoUpgrade: true
+  clusterRef:
+    name: {{ $.Values.name | replace " " "-" | lower }}
+---
+{{- end}}
