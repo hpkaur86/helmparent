@@ -28,7 +28,7 @@ spec:
       disabled: {{ $.Values.httpsloadbalancing }}
   masterAuthorizedNetworksConfig:
     cidrBlocks:
-    - cidrBlock: 10.160.0.0/29
+    - cidrBlock: 
   privateClusterConfig:
     enablePrivateEndpoint: true
     enablePrivateNodes: true
