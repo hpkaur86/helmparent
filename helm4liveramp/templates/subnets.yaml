@@ -14,16 +14,16 @@ spec:
     aggregationInterval: INTERVAL_5_SEC
     flowSampling: 0.5
     metadata: INCLUDE_ALL_METADATA
-  ipCidrRange: 10.160.8.0/21
+  ipCidrRange: 
   region: us-central1
   description: GKE
   privateIpGoogleAccess: true
   networkRef:
     name: {{ $.Values.network }}
   secondaryIpRange:
-  - ipCidrRange: 10.160.128.0/17
+  - ipCidrRange: 
     rangeName: gke-pods
-  - ipCidrRange: 10.160.16.0/21
+  - ipCidrRange: 
     rangeName: gke-services
 ---
 apiVersion: compute.cnrm.cloud.google.com/v1beta1
@@ -37,7 +37,7 @@ spec:
     aggregationInterval: INTERVAL_5_SEC
     flowSampling: 0.5
     metadata: INCLUDE_ALL_METADATA
-  ipCidrRange: 10.160.0.0/29
+  ipCidrRange: 
   region: us-central1
   description: mgmt
   privateIpGoogleAccess: true
