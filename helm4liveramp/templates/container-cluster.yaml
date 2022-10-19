@@ -32,11 +32,11 @@ spec:
   privateClusterConfig:
     enablePrivateEndpoint: true
     enablePrivateNodes: true
-    masterIpv4CidrBlock: 10.160.1.0/28
+    masterIpv4CidrBlock: 
   ipAllocationPolicy:
-    clusterIpv4CidrBlock: 10.160.128.0/17
+    clusterIpv4CidrBlock: 
     clusterSecondaryRangeName: gke-pods
-    servicesIpv4CidrBlock: 10.160.16.0/21
+    servicesIpv4CidrBlock: 
     servicesSecondaryRangeName: gke-services
   databaseEncryption:
     state: ENCRYPTED
